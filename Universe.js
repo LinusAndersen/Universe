@@ -48,7 +48,7 @@ console.log(getHitForce(2,[1,0],1,[-2,0]));
 
 let canvas =  document.getElementById("c");
 let ctx =canvas.getContext("2d");
-canvas.addEventListener('click', spawnPlanet, false);
+canvas.addEventListener('click', clicked, false);
 let buttonRUp= document.createElement('buttonRUp');
 
 const Gravity = .0000000000667
@@ -56,6 +56,7 @@ let G = 0.0005;
 let V1 = [0,1];
 let V2 = [1,0];
 let planets = [];
+let selectedPlanet;
 let vS = 10;
 let sX = 0;
 let sY = 0;
@@ -73,15 +74,13 @@ collision.push(new Planet(40,40,[250,250],[0,0]));
 
 //earth, moon, sun
 universe = []
-universe.push(new Planet(5,5,[300,770],[8,2]));
-universe.push(new Planet(50,100,[200,800],[8,0]));
-universe.push(new Planet(100,200,[250,250],[0,0]));
+universe.push(new Planet(2,5,[50,520],[4,1]));
+universe.push(new Planet(20,100,[-50,550],[4,0]));
+universe.push(new Planet(40,200,[0,0],[0,0]));
 
-planets = [];
-planets.push(new Planet(10,10,[300,400],[2,0]));
-planets.push(new Planet(50,50,[200,300],[0,0]));
+planets = universe;
 
-setInterval(gameLoop, 50);
+setInterval(gameLoop, 75);
 function gameLoop(){
     clearCanvas();
     for (let Planet of planets){
@@ -110,7 +109,22 @@ document.onkeypress = function(evt) {
         sY -= scrollSpeed;
     }
 };
+function clicked(ev){
+    if (markPlanet(ev) == false){
+        spawnPlanet(ev);
+    }
+}
 
+function markPlanet(ev){
+    for(let Planet of planets){
+        if (circleCollision([ev.clientX - sX, ev.clientY - sY],10,Planet.pos, Planet.size)){
+            selectedPlanet = Planet;
+            alert(selectedPlanet.size);
+            return true;
+        }
+    }
+    return false;
+}
 function spawnPlanet(ev){
     sWnR = parseInt(document.getElementById("radiusI").value);
     sWnM = sWnR;
