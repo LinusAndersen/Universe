@@ -20,4 +20,4 @@ Need to Improve:
   - better visuels, music, GUI
 
 this application is develloped by: 
-  Linus Andersen (programmer)
+  - Linus Andersen (programmer)
