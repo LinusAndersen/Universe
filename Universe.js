@@ -9,6 +9,7 @@ class Planet{
     show(){
         drawCircle(this.pos[0], this.pos[1], this.size);
         drawLine(this.pos, [this.pos[0] + this.dir[0] * vS, this.pos[1] + this.dir[1]*vS]);
+        showText(this.pos, String(Math.round(this.size)));
     }
     getForceOnMe(Planets){
         let force = [0,0];
@@ -48,6 +49,8 @@ console.log(getHitForce(2,[1,0],1,[-2,0]));
 
 let canvas =  document.getElementById("c");
 let ctx =canvas.getContext("2d");
+let cW = canvas.width;
+let cH = canvas.height;
 canvas.addEventListener('click', clicked, false);
 let buttonRUp= document.createElement('buttonRUp');
 
@@ -56,11 +59,11 @@ let G = 0.0005;
 let V1 = [0,1];
 let V2 = [1,0];
 let planets = [];
-let selectedPlanet;
+let selectedPlanet = null;
 let vS = 10;
 let sX = 0;
 let sY = 0;
-let scrollSpeed = 10;
+let scrollSpeed = 100;
 let sWnR = 10;
 let sWnM = 10
 let sWnV = [2,0];
@@ -82,6 +85,12 @@ planets = universe;
 
 setInterval(gameLoop, 75);
 function gameLoop(){
+    if (selectedPlanet != null){
+        followPlanet(selectedPlanet);
+        if (selectedPlanet.del == true){
+            selectedPlanet = null;
+        }
+    }
     clearCanvas();
     for (let Planet of planets){
         Planet.tick(planets);
@@ -91,6 +100,12 @@ function gameLoop(){
             planets.splice(p,1);
         }
     }
+}
+function followPlanet(Planet){
+    console.log(Planet);
+    sX = -(Planet.pos[0] - cW/2 );
+    sY = -(Planet.pos[1] - cH/2);
+    console.log(sX, sY);
 }
 document.onkeypress = function(evt) {
     evt = evt || window.event;
@@ -108,6 +123,9 @@ document.onkeypress = function(evt) {
     if (charStr == "s"){
         sY -= scrollSpeed;
     }
+    if (charStr == "q"){
+        selectedPlanet = null;
+    }
 };
 function clicked(ev){
     if (markPlanet(ev) == false){
@@ -119,7 +137,6 @@ function markPlanet(ev){
     for(let Planet of planets){
         if (circleCollision([ev.clientX - sX, ev.clientY - sY],10,Planet.pos, Planet.size)){
             selectedPlanet = Planet;
-            alert(selectedPlanet.size);
             return true;
         }
     }
@@ -146,6 +163,12 @@ function drawLine(pos1,pos2){
     ctx.moveTo(pos1[0] + sX,pos1[1] + sY);
     ctx.lineTo(pos2[0] + sX,pos2[1] + sY);
     ctx.stroke();
+}
+function showText(pos, string){
+    ctx.fillSyle="blue";
+    ctx.textAlign="center"; 
+    ctx.font="30px Georgia";
+    ctx.fillText(string,pos[0] + sX,pos[1] + sY);
 }
 function circleCollision(pos1,r1,pos2,r2){
     if (pythagoras(pos1[1]- pos2[1], pos1[0] - pos2[0]) > r1 + r2){
