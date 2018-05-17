@@ -8,6 +8,8 @@ Controlls:
   - clicking in a free-space spawns a new planet
   - clicking on a planet: have your camera locked to this planet
   - Q: unlock the kamera
+  - dragging a planet: move the planet
+  - Pressing D: Delets the selected Planet (if you have selected one)
 
 
 Working for now:
@@ -22,3 +24,4 @@ Need to Improve:
 
 this application is develloped by: 
   - Linus Andersen (programmer)
+  

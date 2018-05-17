@@ -34,7 +34,7 @@ class Planet{
             }
         }
     }
-    tick(Planets){
+    move(Planets){
         this.dir = addVector(this.dir, this.getForceOnMe(Planets));
         this.pos[0] += this.dir[0];
         this.pos[1] += this.dir[1];
@@ -51,15 +51,15 @@ let canvas =  document.getElementById("c");
 let ctx =canvas.getContext("2d");
 let cW = canvas.width;
 let cH = canvas.height;
-canvas.addEventListener('click', clicked, false);
 let buttonRUp= document.createElement('buttonRUp');
-
 const Gravity = .0000000000667
 let G = 0.0005;
 let V1 = [0,1];
 let V2 = [1,0];
 let planets = [];
 let selectedPlanet = null;
+let downClick = null;
+let timeDownClick = null;
 let vS = 10;
 let sX = 0;
 let sY = 0;
@@ -67,6 +67,7 @@ let scrollSpeed = 100;
 let sWnR = 10;
 let sWnM = 10
 let sWnV = [2,0];
+let isPause = true;
 
 //collision
 collision = [];
@@ -85,6 +86,7 @@ planets = universe;
 
 setInterval(gameLoop, 75);
 function gameLoop(){
+    G = document.getElementById("Gravity").value;
     if (selectedPlanet != null){
         followPlanet(selectedPlanet);
         if (selectedPlanet.del == true){
@@ -92,14 +94,29 @@ function gameLoop(){
         }
     }
     clearCanvas();
-    for (let Planet of planets){
-        Planet.tick(planets);
+    if (isPause==false){
+        for (let Planet of planets){
+            Planet.move(planets);
+        }
     }
     for (let p = planets.length - 1;  p>=0; p--){
         if (planets[p].del){
             planets.splice(p,1);
         }
     }
+    for (let Planet of planets){
+        Planet.show();
+    }
+    
+}
+function pause(){
+    if (isPause){
+        isPause = false;
+    }
+    else{
+        isPause = true;
+    }
+    console.log(isPause);
 }
 function followPlanet(Planet){
     console.log(Planet);
@@ -126,21 +143,47 @@ document.onkeypress = function(evt) {
     if (charStr == "q"){
         selectedPlanet = null;
     }
-};
-function clicked(ev){
-    if (markPlanet(ev) == false){
-        spawnPlanet(ev);
+    if (charStr == "p"){
+        pause();
     }
-}
-
-function markPlanet(ev){
-    for(let Planet of planets){
-        if (circleCollision([ev.clientX - sX, ev.clientY - sY],10,Planet.pos, Planet.size)){
-            selectedPlanet = Planet;
-            return true;
+    if (charStr == "d"){
+        if (selectedPlanet != null){
+            selectedPlanet.del = true;
         }
     }
-    return false;
+
+};
+canvas.onmousedown = function (ev){
+    console.log("MouseDown");
+    downClick = getPlanet(ev);
+    let Time = new Date();
+    timeDownClick = Time.getTime();
+}
+canvas.onmouseup = function (ev){
+    console.log("MouseUp");
+    let Time = new Date();
+    console.log(Time.getTime() - timeDownClick);
+    if (Time.getTime() - timeDownClick > 200){
+        if (downClick != null){
+            downClick.pos = [ev.clientX -sX, ev.clientY - sY];
+        }
+    }
+    else{
+        if (downClick != null){
+            selectedPlanet = downClick;
+        }
+        else{
+            spawnPlanet(ev);
+        }
+    }
+}
+function getPlanet(ev){
+    for(let Planet of planets){
+        if (circleCollision([ev.clientX - sX, ev.clientY - sY],10,Planet.pos, Planet.size)){
+            return Planet;
+        }
+    }
+    return null;
 }
 function spawnPlanet(ev){
     sWnR = parseInt(document.getElementById("radiusI").value);
