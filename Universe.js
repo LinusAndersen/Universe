@@ -146,7 +146,7 @@ document.onkeypress = function(evt) {
     if (charStr == "p"){
         pause();
     }
-    if (charStr == "d"){
+    if (charStr == "x"){
         if (selectedPlanet != null){
             selectedPlanet.del = true;
         }

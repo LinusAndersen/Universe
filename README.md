@@ -9,7 +9,7 @@ Controlls:
   - clicking on a planet: have your camera locked to this planet
   - Q: unlock the kamera
   - dragging a planet: move the planet
-  - Pressing D: Delets the selected Planet (if you have selected one)
+  - Pressing X: Delets the selected Planet (if you have selected one)
 
 
 Working for now:
@@ -20,7 +20,10 @@ Bugs you should be aware of:
   - the 3 text inputs have to be filled before spawning a planet
 
 Need to Improve:
-  - GUI(see Concept-Universe.png), music, zoom
+  - GUI(see Concept-Universe.png)
+  - music
+  - zoom
+  - edit Planets
 
 this application is develloped by: 
   - Linus Andersen (programmer)
