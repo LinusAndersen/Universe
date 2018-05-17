@@ -4,11 +4,11 @@ This is a thing I create at the moment centered around gravity and planets.
 
 Controlls:
   - WASD to move in the scean
-  - the 3 textinputs are radius/mass, start-velocity-x and start-velocity-y of a new planet
-  - clicking in a free-space spawns a new planet
-  - clicking on a planet: have your camera locked to this planet
+  - The 3 textinputs are radius/mass, start-velocity-x and start-velocity-y of a new planet
+  - Clicking in a free-space spawns a new planet
+  - Clicking on a planet: have your camera locked to this planet
   - Q: unlock the kamera
-  - dragging a planet: move the planet
+  - Dragging a planet: move the planet
   - Pressing X: Delets the selected Planet (if you have selected one)
 
 
