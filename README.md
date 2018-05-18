@@ -21,9 +21,11 @@ Working for now:
   - you can delete Planets 
   - name and mass is displayed
   - colorcollision
+  - Editable Planets
+
 Bugs you should be aware of:
   - try to have the canvas in the top left corner of your browser
-  - the 3 text inputs have to be filled before spawning a planet
+  - the text inputs have to be filled before spawning a planet
 
 Need to Improve:
   - GUI(see Concept-Universe.png)

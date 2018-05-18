@@ -72,7 +72,6 @@ let sWnM = 10
 let sWnV = [2,0];
 let isPause = true;
 
-
 //earth, moon, sun
 universe = []
 universe.push(new Planet("Mond","#7a7a7a",2,5,[50,520],[4,1]));
@@ -114,6 +113,19 @@ function pause(){
         isPause = true;
     }
     console.log(isPause);
+}
+function edit(){
+    if (selectedPlanet != null){
+        selectedPlanet.name = document.getElementById("name").value;
+        selectedPlanet.color = document.getElementById("color").value;
+        selectedPlanet.size = parseInt(document.getElementById("radiusI").value);
+        selectedPlanet.mass = parseInt(document.getElementById("massI").value);
+        selectedPlanet.dir = [parseInt(document.getElementById("SVX").value),parseInt(document.getElementById("SVY").value)];
+    }
+}
+function clearAll(){
+    console.log("hey");
+    planets = [];
 }
 function followPlanet(Planet){
     sX = -(Planet.pos[0] - cW/2 );
@@ -165,7 +177,17 @@ canvas.onmouseup = function (ev){
     }
     else{
         if (downClick != null){
-            selectedPlanet = downClick;
+            if (selectedPlanet == null || selectedPlanet != downClick){
+                selectedPlanet = downClick;
+            }
+            else{
+                document.getElementById("name").value = selectedPlanet.name;
+                document.getElementById("color").value = selectedPlanet.color;
+                document.getElementById("radiusI").value = selectedPlanet.size;
+                document.getElementById("massI").value = selectedPlanet.mass;
+                document.getElementById("SVX").value = selectedPlanet.dir[0];
+                document.getElementById("SVY").value = selectedPlanet.dir[1];
+            }
         }
         else{
             spawnPlanet(ev);
@@ -184,7 +206,7 @@ function spawnPlanet(ev){
     sWnName = document.getElementById("name").value;
     sWnColor = document.getElementById("color").value;
     sWnR = parseInt(document.getElementById("radiusI").value);
-    sWnM = sWnR;
+    sWnM = parseInt(document.getElementById("massI").value);
     sWnV = [parseInt(document.getElementById("SVX").value),parseInt(document.getElementById("SVY").value)];
     planets.push(new Planet(sWnName,sWnColor,sWnR,sWnM, [ev.clientX - sX, ev.clientY - sY], sWnV));
 }
