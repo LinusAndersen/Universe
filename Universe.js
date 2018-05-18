@@ -14,13 +14,24 @@ class Planet{
         showText(this.pos, this.name + ":" + String(this.mass));
     }
     getForceOnMe(Planets){
-        let force = [0,0];
+        let force = null;
         for (let Planet of Planets){
             if (Planet != this){
-                force = addVector(force, getGVector(this.pos, Planet.pos, this.mass, Planet.mass,G));
+                if (force == null){
+                    force = getGVector(this.pos, Planet.pos, this.mass, Planet.mass,G);
+                }
+                else{
+                    force = addVector(force, getGVector(this.pos, Planet.pos, this.mass, Planet.mass,G));
+                }
             }
         }
-        return(force);
+        console.log(force);
+        if (force == null){
+            return (false);
+        }
+        else{
+            return(force);
+        }
     }
     checkCol(Planets){
         for (let Planet of Planets){
@@ -38,7 +49,12 @@ class Planet{
         }
     }
     move(Planets){
-        this.dir = addVector(this.dir, this.getForceOnMe(Planets));
+        console.log(this.dir);
+        console.log(this.getForceOnMe(Planets));
+        if (this.getForceOnMe(Planets) != false){
+            this.dir = addVector(this.dir, this.getForceOnMe(Planets));
+        }
+        
         this.pos[0] += this.dir[0];
         this.pos[1] += this.dir[1];
         this.checkCol(Planets);
