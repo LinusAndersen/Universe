@@ -13,8 +13,14 @@ Controlls:
 
 
 Working for now:
-  - basic things like gravity, movement, planets, collisions, camera follow, size is displayed
-
+  - gravity 
+  - movement
+  - planets
+  - collisions
+  - camera follow
+  - you can delete Planets 
+  - name and mass is displayed
+  - colorcollision
 Bugs you should be aware of:
   - try to have the canvas in the top left corner of your browser
   - the 3 text inputs have to be filled before spawning a planet

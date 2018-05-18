@@ -1,5 +1,7 @@
 class Planet{
-    constructor(size, mass, pos, dir){
+    constructor(name, color, size, mass, pos, dir){
+        this.name = name;
+        this.color = color;
         this.size = size;
         this.mass = mass;
         this.pos = pos;
@@ -7,9 +9,9 @@ class Planet{
         this.del = false;
     }
     show(){
-        drawCircle(this.pos[0], this.pos[1], this.size);
+        drawCircle(this.pos[0], this.pos[1], this.size, this.color);
         drawLine(this.pos, [this.pos[0] + this.dir[0] * vS, this.pos[1] + this.dir[1]*vS]);
-        showText(this.pos, String(Math.round(this.size)));
+        showText(this.pos, this.name + ":" + String(this.mass));
     }
     getForceOnMe(Planets){
         let force = [0,0];
@@ -28,6 +30,7 @@ class Planet{
                         Planet.dir = getHitForce(Planet.mass, Planet.dir, this.mass, this.dir);
                         Planet.mass += this.mass;
                         Planet.size = Math.sqrt((Math.pow(this.size,2) * Math.PI + Math.pow(Planet.size,2) * Math.PI)/Math.PI);
+                        Planet.color = findAverageOfColors(this.color, Planet.color);
                         this.del = true;
                     }
                 }
@@ -69,18 +72,12 @@ let sWnM = 10
 let sWnV = [2,0];
 let isPause = true;
 
-//collision
-collision = [];
-collision.push(new Planet(20,20,[100,250],[0,0]));
-collision.push(new Planet(40,40,[250,250],[0,0]));
-
-
 
 //earth, moon, sun
 universe = []
-universe.push(new Planet(2,5,[50,520],[4,1]));
-universe.push(new Planet(20,100,[-50,550],[4,0]));
-universe.push(new Planet(40,200,[0,0],[0,0]));
+universe.push(new Planet("Mond","#7a7a7a",2,5,[50,520],[4,1]));
+universe.push(new Planet("Erde","#04870a",20,100,[-50,550],[4,0]));
+universe.push(new Planet("Sonne","#ffdd00",40,200,[0,0],[0,0]));
 
 planets = universe;
 
@@ -119,10 +116,8 @@ function pause(){
     console.log(isPause);
 }
 function followPlanet(Planet){
-    console.log(Planet);
     sX = -(Planet.pos[0] - cW/2 );
     sY = -(Planet.pos[1] - cH/2);
-    console.log(sX, sY);
 }
 document.onkeypress = function(evt) {
     evt = evt || window.event;
@@ -186,18 +181,20 @@ function getPlanet(ev){
     return null;
 }
 function spawnPlanet(ev){
+    sWnName = document.getElementById("name").value;
+    sWnColor = document.getElementById("color").value;
     sWnR = parseInt(document.getElementById("radiusI").value);
     sWnM = sWnR;
     sWnV = [parseInt(document.getElementById("SVX").value),parseInt(document.getElementById("SVY").value)];
-    planets.push(new Planet(sWnR,sWnM, [ev.clientX - sX, ev.clientY - sY], sWnV));
+    planets.push(new Planet(sWnName,sWnColor,sWnR,sWnM, [ev.clientX - sX, ev.clientY - sY], sWnV));
 }
 function clearCanvas(){
     canvas.width = canvas.width;
 }
-function drawCircle(x,y,r){
+function drawCircle(x,y,r,color){
     ctx.beginPath();
     ctx.arc(x + sX,y + sY,r,0,2*Math.PI, true);
-    ctx.fillStyle="#5F5F5F";
+    ctx.fillStyle=color;
     ctx.fill();
     ctx.fillStyle="#000000";
 }
@@ -248,4 +245,19 @@ function getDir(a,b){
 }
 function getGVector(pos1,pos2,m1,m2,G){
     return(getVector(getDir(pos2[0]-pos1[0], pos2[1] - pos1[1]),getg(G,m2,pythagoras(pos2[0]-pos1[0], pos2[1] - pos1[1]))));
+}
+function rgbToHex(red, green, blue) {
+    var rgb = blue | (green << 8) | (red << 16);
+    return '#' + (0x1000000 + rgb).toString(16).slice(1)
+}
+function hexToRgb(hex) {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+}
+function findAverageOfColors(color1, color2){
+    return(rgbToHex((hexToRgb(color1).r + hexToRgb(color2).r)/2, (hexToRgb(color1).g + hexToRgb(color2).g)/2, (hexToRgb(color1).b + hexToRgb(color2).b)/2));
 }
