@@ -4,12 +4,16 @@ This is a thing I create at the moment centered around gravity and planets.
 
 Controlls:
   - WASD to move in the scean
-  - The 3 textinputs are radius/mass, start-velocity-x and start-velocity-y of a new planet
   - Clicking in a free-space spawns a new planet
   - Clicking on a planet: have your camera locked to this planet
   - Q: unlock the kamera
   - Dragging a planet: move the planet
-  - Pressing X: Delets the selected Planet (if you have selected one)
+  - Pressing X: Delets the selected planet (if you have selected one)
+  - Clicking on the same planet you selected copys his data to your textinputs
+  - Clicking "Edit" edits the selected planet
+  - Clicking "Clear" clears all planets
+  - the textinputs from up to down, left to right: Name, Color(hex),      Radius, Mass, Velocity(x), Velocity(y), overall Gravity
+
 
 
 Working for now:
