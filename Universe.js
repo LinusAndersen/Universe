@@ -90,6 +90,7 @@ let sWnM = 10
 let sWnV = [2,0];
 let isPause = true;
 let mouseDownEV;
+let cMousePos = [0,0];
 
 //earth, moon, sun
 universe = []
@@ -200,12 +201,15 @@ document.onkeypress = function(evt) {
         if (selectedPlanet != null){
             console.log("Hey");
             //mousePos-planetePos /vs
-            //selectedPlanet.dir = [(otherEV.clientX-ev.clientX)/vS, (otherEV.clientY-ev.clientY)/vS];
+            selectedPlanet.dir = [((cMousePos[0] - sX) - selectedPlanet.pos[0])/vS,((cMousePos[1] - sY) - selectedPlanet.pos[1])/vS];
         }
     }
 
 };
 
+canvas.onmousemove = function (ev){
+    cMousePos = [ev.clientX, ev.clientY];
+}
 //handles the mouse down event
 canvas.onmousedown = function (ev){
     console.log("MouseDown");
