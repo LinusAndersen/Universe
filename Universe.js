@@ -1,3 +1,4 @@
+//this is the "planet" class
 class Planet{
     constructor(name, color, size, mass, pos, dir){
         this.name = name;
@@ -62,10 +63,11 @@ class Planet{
     }
 }
 
+//Test
 console.log(getHitForce(2,[1,0],1,[-2,0]));
 
 
-
+//Variables
 let canvas =  document.getElementById("c");
 let ctx =canvas.getContext("2d");
 let cW = canvas.width;
@@ -87,6 +89,7 @@ let sWnR = 10;
 let sWnM = 10
 let sWnV = [2,0];
 let isPause = true;
+let mouseDownEV;
 
 //earth, moon, sun
 universe = []
@@ -94,11 +97,14 @@ universe.push(new Planet("Mond","#7a7a7a",2,5,[50,520],[4,1]));
 universe.push(new Planet("Erde","#04870a",20,100,[-50,550],[4,0]));
 universe.push(new Planet("Sonne","#ffdd00",40,200,[0,0],[0,0]));
 
+//setting planets at the start to the state: "universe"
 planets = universe;
 
+//this is the gameLoop
 setInterval(gameLoop, 75);
 function gameLoop(){
     G = document.getElementById("Gravity").value;
+    //follow planet
     if (selectedPlanet != null){
         followPlanet(selectedPlanet);
         if (selectedPlanet.del == true){
@@ -106,21 +112,25 @@ function gameLoop(){
         }
     }
     clearCanvas();
+    //move
     if (isPause==false){
         for (let Planet of planets){
             Planet.move(planets);
         }
     }
+    //delete if theres a need
     for (let p = planets.length - 1;  p>=0; p--){
         if (planets[p].del){
             planets.splice(p,1);
         }
     }
+    //sbow the planets
     for (let Planet of planets){
         Planet.show();
     }
     
 }
+//a function for inverting the isPause
 function pause(){
     if (isPause){
         isPause = false;
@@ -130,6 +140,7 @@ function pause(){
     }
     console.log(isPause);
 }
+//edits the selected planet to inputvalues
 function edit(){
     if (selectedPlanet != null){
         selectedPlanet.name = document.getElementById("name").value;
@@ -139,64 +150,100 @@ function edit(){
         selectedPlanet.dir = [parseInt(document.getElementById("SVX").value),parseInt(document.getElementById("SVY").value)];
     }
 }
+//sets the planets-array to [] (clears the sceane)
 function clearAll(){
     console.log("hey");
     planets = [];
 }
+//sets the scoll so the Planet is followed
 function followPlanet(Planet){
     sX = -(Planet.pos[0] - cW/2 );
     sY = -(Planet.pos[1] - cH/2);
 }
+//handles the keypress event
 document.onkeypress = function(evt) {
     evt = evt || window.event;
     var charCode = evt.keyCode || evt.which;
     var charStr = String.fromCharCode(charCode);
+    //moves your relative center left
     if (charStr == "a"){
         sX += scrollSpeed;
     }
+    //moves your relative center right
     if (charStr == "d"){
         sX -= scrollSpeed;
     }
+    //moves your relative center up
     if (charStr == "w"){
         sY += scrollSpeed;
     }
+    //moves your relative center down
     if (charStr == "s"){
         sY -= scrollSpeed;
     }
+    //disselects the selected planet
     if (charStr == "q"){
         selectedPlanet = null;
     }
+    //p pauses/stops the game, does the same as the button
     if (charStr == "p"){
         pause();
     }
+    //x delets the selected planet
     if (charStr == "x"){
         if (selectedPlanet != null){
             selectedPlanet.del = true;
         }
     }
+    //v edits the dir/velocity of the selected planet
+    if (charStr == "v"){
+        if (selectedPlanet != null){
+            console.log("Hey");
+            //mousePos-planetePos /vs
+            //selectedPlanet.dir = [(otherEV.clientX-ev.clientX)/vS, (otherEV.clientY-ev.clientY)/vS];
+        }
+    }
 
 };
+
+//handles the mouse down event
 canvas.onmousedown = function (ev){
     console.log("MouseDown");
+    //saves object mouse over, current time and mouseDownEvent 
     downClick = getPlanet(ev);
     let Time = new Date();
     timeDownClick = Time.getTime();
+    mouseDownEV = ev;
 }
+//handles the mouse up event
 canvas.onmouseup = function (ev){
     console.log("MouseUp");
     let Time = new Date();
     console.log(Time.getTime() - timeDownClick);
     if (Time.getTime() - timeDownClick > 200){
+        //means: the action was dragging
         if (downClick != null){
+            //means: hoverd over planet on downclick
+            //moves the downClick (the planet clicked down on)
             downClick.pos = [ev.clientX -sX, ev.clientY - sY];
+        }
+        else{
+            //means: clicked on void on downclick
+            //spawns a new planet with startvelocity as dragged
+            spawnPlanet(ev,mouseDownEV);
         }
     }
     else{
+        //means: the action was clicking
         if (downClick != null){
+            //means: clicked on object
             if (selectedPlanet == null || selectedPlanet != downClick){
+                //means: this planet isn't selected atm
                 selectedPlanet = downClick;
             }
             else{
+                //means: planet is already selected
+                //copy the stats down
                 document.getElementById("name").value = selectedPlanet.name;
                 document.getElementById("color").value = selectedPlanet.color;
                 document.getElementById("radiusI").value = selectedPlanet.size;
@@ -206,10 +253,13 @@ canvas.onmouseup = function (ev){
             }
         }
         else{
-            spawnPlanet(ev);
+            //means: clicked on void
+            spawnPlanet(ev,false);
         }
     }
 }
+//returns the planet the mouse is over
+//else returns void
 function getPlanet(ev){
     for(let Planet of planets){
         if (circleCollision([ev.clientX - sX, ev.clientY - sY],10,Planet.pos, Planet.size)){
@@ -218,17 +268,25 @@ function getPlanet(ev){
     }
     return null;
 }
-function spawnPlanet(ev){
+//spawns a planet on a given location, if you want with velocity
+function spawnPlanet(ev,otherEV){
     sWnName = document.getElementById("name").value;
     sWnColor = document.getElementById("color").value;
     sWnR = parseInt(document.getElementById("radiusI").value);
     sWnM = parseInt(document.getElementById("massI").value);
-    sWnV = [parseInt(document.getElementById("SVX").value),parseInt(document.getElementById("SVY").value)];
+    if (otherEV == false){
+        sWnV = [parseInt(document.getElementById("SVX").value),parseInt(document.getElementById("SVY").value)];
+    }
+    else{
+        sWnV = [(otherEV.clientX-ev.clientX)/vS, (otherEV.clientY-ev.clientY)/vS];
+    }
     planets.push(new Planet(sWnName,sWnColor,sWnR,sWnM, [ev.clientX - sX, ev.clientY - sY], sWnV));
 }
+//clears the canvas
 function clearCanvas(){
     canvas.width = canvas.width;
 }
+//draws a circle with radius r and a color c with the location (x,y)
 function drawCircle(x,y,r,color){
     ctx.beginPath();
     ctx.arc(x + sX,y + sY,r,0,2*Math.PI, true);
@@ -236,18 +294,21 @@ function drawCircle(x,y,r,color){
     ctx.fill();
     ctx.fillStyle="#000000";
 }
+//draws a line between two positions
 function drawLine(pos1,pos2){
     ctx.beginPath();
     ctx.moveTo(pos1[0] + sX,pos1[1] + sY);
     ctx.lineTo(pos2[0] + sX,pos2[1] + sY);
     ctx.stroke();
 }
+//shows a text (string) on a given position
 function showText(pos, string){
     ctx.fillSyle="blue";
     ctx.textAlign="center"; 
     ctx.font="30px Georgia";
     ctx.fillText(string,pos[0] + sX,pos[1] + sY);
 }
+//checks for collision between two circles
 function circleCollision(pos1,r1,pos2,r2){
     if (pythagoras(pos1[1]- pos2[1], pos1[0] - pos2[0]) > r1 + r2){
         return false;
@@ -256,6 +317,7 @@ function circleCollision(pos1,r1,pos2,r2){
         return true;
     }
 }
+//adds two circles
 function addVector(V1, V2){
     let nVec = [];
     for (let i = 0; i < V1.length; i++){
@@ -263,31 +325,39 @@ function addVector(V1, V2){
     }
     return (nVec);
 }
+//calculates the force the surviving planet has after collision 2 planets
 function getHitForce(m1, forceVector1, m2, forceVector2){
     console.log(m1, forceVector1, m2, forceVector2);
     console.log(addVector(forceVector1,getVector(getDir(forceVector2[0], forceVector2[1]),(m2/m1) * pythagoras(forceVector2[0],forceVector2[1]))));
     return(addVector(forceVector1,getVector(getDir(forceVector2[0], forceVector2[1]),(m2/m1) * pythagoras(forceVector2[0],forceVector2[1]))));
 }
+//get gravitation comming from a planet with mass M! and radius r under considoration of the gravitational constant
 function getg(G, M1, r){
     return((G * M1)/r*r);
 }
+//returns c given a and b in a² + b² = c³
 function pythagoras(a,b){
     return(Math.sqrt(a*a+b*b));
 }
+//returns a vector given the direction and the force
 function getVector(dir, force){
     return([Math.cos(dir) * force, Math.sin(dir) * force]);
 }
+//returns the direction of a given vector
 function getDir(a,b){
     let dir = Math.atan2(b/pythagoras(a,b),a/pythagoras(a,b));
     return (dir);
 }
+//gets the vactor gravity pulls on a planet, given the planet and the other planet
 function getGVector(pos1,pos2,m1,m2,G){
     return(getVector(getDir(pos2[0]-pos1[0], pos2[1] - pos1[1]),getg(G,m2,pythagoras(pos2[0]-pos1[0], pos2[1] - pos1[1]))));
 }
+//converts a rgb-string to a hex-string
 function rgbToHex(red, green, blue) {
     var rgb = blue | (green << 8) | (red << 16);
     return '#' + (0x1000000 + rgb).toString(16).slice(1)
 }
+//converts a hex-string to a rgb-string
 function hexToRgb(hex) {
     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return result ? {
@@ -296,6 +366,7 @@ function hexToRgb(hex) {
         b: parseInt(result[3], 16)
     } : null;
 }
+//finds the rgb-middle of 2 given colors
 function findAverageOfColors(color1, color2){
     return(rgbToHex((hexToRgb(color1).r + hexToRgb(color2).r)/2, (hexToRgb(color1).g + hexToRgb(color2).g)/2, (hexToRgb(color1).b + hexToRgb(color2).b)/2));
 }
