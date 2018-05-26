@@ -53,7 +53,7 @@ class Planet{
         console.log(this.dir);
         console.log(this.getForceOnMe(Planets));
         if (this.getForceOnMe(Planets) != false){
-            this.dir = addVector(this.dir, this.getForceOnMe(Planets));
+            this.dir = addVector(this.dir,this.getForceOnMe(Planets));
         }
         
         this.pos[0] += this.dir[0];
@@ -65,8 +65,7 @@ class Planet{
 
 //Test
 console.log(getHitForce(2,[1,0],1,[-2,0]));
-
-
+console.log(multipliVector([3,10], 0.5))
 //Variables
 let canvas =  document.getElementById("c");
 let ctx =canvas.getContext("2d");
@@ -91,7 +90,7 @@ let sWnV = [2,0];
 let isPause = true;
 let mouseDownEV;
 let cMousePos = [0,0];
-
+let gameSpeed = 100;
 //earth, moon, sun
 universe = []
 universe.push(new Planet("Mond","#7a7a7a",2,5,[50,520],[4,1]));
@@ -102,8 +101,9 @@ universe.push(new Planet("Sonne","#ffdd00",40,200,[0,0],[0,0]));
 planets = universe;
 
 //this is the gameLoop
-setInterval(gameLoop, 75);
+gameLoop();
 function gameLoop(){
+    gameSpeed = document.getElementById("gameSpeed").value;
     G = document.getElementById("Gravity").value;
     //follow planet
     if (selectedPlanet != null){
@@ -129,7 +129,7 @@ function gameLoop(){
     for (let Planet of planets){
         Planet.show();
     }
-    
+    setTimeout(gameLoop, gameSpeed);
 }
 //a function for inverting the isPause
 function pause(){
@@ -355,6 +355,9 @@ function getDir(a,b){
 //gets the vactor gravity pulls on a planet, given the planet and the other planet
 function getGVector(pos1,pos2,m1,m2,G){
     return(getVector(getDir(pos2[0]-pos1[0], pos2[1] - pos1[1]),getg(G,m2,pythagoras(pos2[0]-pos1[0], pos2[1] - pos1[1]))));
+}
+function multipliVector(V, multiplicator){
+    return([V[0] * multiplicator, V[1] * multiplicator]);
 }
 //converts a rgb-string to a hex-string
 function rgbToHex(red, green, blue) {
