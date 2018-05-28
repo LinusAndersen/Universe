@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="utf-8">
-  <title>Universe-Gravity</title>
+  <title>Universe2D</title>
   <style>
   #c{
     border:1px solid black;
@@ -10,18 +10,36 @@
   </style>
 </head>
 <body>
+    <h3>Universe2D</h3>
   <canvas id = "c" width="1000" height="600"></canvas>
-  <input type="text" id="name" value="PlanetName">
-  <input type="text" id="color" value="#999999">
-  <input type="text" id="radiusI" value="15">
-  <input type="text" id="massI" value="15">
-  <input type="text" id="SVX" value="0">
-  <input type="text" id="SVY" value="0">
-  <button onclick="edit()">Edit</button>
+  <br>
+  Planets name: <input type="text" id="name" value="PlanetName">
+  <br>
+  Planets color(hex): <input type="text" id="color" value="#999999">
+  <br>
+  Planets radius: <input type="text" id="radiusI" value="15">
+  <br>
+  Planets mass: <input type="text" id="massI" value="15">
+  <br>
+  Planets direction: X <input type="text" id="SVX" value="0"> Y <input type="text" id="SVY" value="0">
+  <br>
+  <button onclick="edit()">Edit the selected planet</button>
+  <br>
   <button onclick="pause()">Play/Pause(P)</button>
-  <input type="text" id="Gravity" value="0.0005">
-  <button onclick="clearAll()">Clear</button>
-  <input type="text" id="gameSpeed" value="100">
+  <br>
+  <button onclick="clearAll()">Clear all</button>
+  <br>
+  Overall gravity: <input type="text" id="Gravity" value="0.0005">
+  <br>
+  Gamespeed (in ms): <input type="text" id="gameSpeed" value="100">
+  <br>
+  <br>
+  <br>
+  <small>this game was made by: </small>
+  <br>
+  <small>Julius Andersen - music</small>
+  <br>
+  <small>Linus Andersen - programming </small>
   <script src="Universe.js"></script>
 </body>
 </html>

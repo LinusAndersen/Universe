@@ -10,9 +10,10 @@ class Planet{
         this.del = false;
     }
     show(){
-        drawCircle(this.pos[0], this.pos[1], this.size, this.color);
-        drawLine(this.pos, [this.pos[0] + this.dir[0] * vS, this.pos[1] + this.dir[1]*vS]);
-        showText(this.pos, this.name + ":" + String(this.mass));
+        this.pos1 = [this.pos[0] + sX, this.pos[1] + sY];
+        drawCircle(this.pos1[0], this.pos1[1], this.size, this.color);
+        drawLine(this.pos1, [this.pos1[0] + this.dir[0] * vS, this.pos1[1] + this.dir[1]*vS]);
+        showText(this.pos1, this.name + ":" + String(this.mass));
     }
     getForceOnMe(Planets){
         let force = null;
@@ -26,7 +27,6 @@ class Planet{
                 }
             }
         }
-        console.log(force);
         if (force == null){
             return (false);
         }
@@ -50,8 +50,6 @@ class Planet{
         }
     }
     move(Planets){
-        console.log(this.dir);
-        console.log(this.getForceOnMe(Planets));
         if (this.getForceOnMe(Planets) != false){
             this.dir = addVector(this.dir,this.getForceOnMe(Planets));
         }
@@ -91,8 +89,14 @@ let isPause = true;
 let mouseDownEV;
 let cMousePos = [0,0];
 let gameSpeed = 100;
+let zoom = 1;
+
+//music
+var snd = new Audio("Universe_Soundtrack.mp3"); // buffers automatically when created
+document.body.onclick=()=>{snd.play();}
+
 //earth, moon, sun
-universe = []
+universe = [];
 universe.push(new Planet("Mond","#7a7a7a",2,5,[50,520],[4,1]));
 universe.push(new Planet("Erde","#04870a",20,100,[-50,550],[4,0]));
 universe.push(new Planet("Sonne","#ffdd00",40,200,[0,0],[0,0]));
@@ -113,6 +117,8 @@ function gameLoop(){
         }
     }
     clearCanvas();
+    ctx.translate( cW/2,cH/2);
+    ctx.scale( zoom, zoom);
     //move
     if (isPause==false){
         for (let Planet of planets){
@@ -125,7 +131,7 @@ function gameLoop(){
             planets.splice(p,1);
         }
     }
-    //sbow the planets
+    //show the planets
     for (let Planet of planets){
         Planet.show();
     }
@@ -158,8 +164,8 @@ function clearAll(){
 }
 //sets the scoll so the Planet is followed
 function followPlanet(Planet){
-    sX = -(Planet.pos[0] - cW/2 );
-    sY = -(Planet.pos[1] - cH/2);
+    sX = -(Planet.pos[0]);
+    sY = -(Planet.pos[1]);
 }
 //handles the keypress event
 document.onkeypress = function(evt) {
@@ -201,12 +207,15 @@ document.onkeypress = function(evt) {
         if (selectedPlanet != null){
             console.log("Hey");
             //mousePos-planetePos /vs
-            selectedPlanet.dir = [((cMousePos[0] - sX) - selectedPlanet.pos[0])/vS,((cMousePos[1] - sY) - selectedPlanet.pos[1])/vS];
+            selectedPlanet.dir = [(getMousePos(sX, sY, zoom, cMousePos[0], cMousePos[1])[0] - selectedPlanet.pos[0]) /vS, (getMousePos(sX, sY, zoom, cMousePos[0], cMousePos[1])[1] - selectedPlanet.pos[1]) /vS];
         }
     }
 
 };
-
+canvas.addEventListener("onwheel" in document ? "wheel" : "mousewheel", function(e) {
+    e.wheel = e.deltaY ? -e.deltaY : e.wheelDelta/40;
+    zoom += e.wheel/1000;
+  });
 canvas.onmousemove = function (ev){
     cMousePos = [ev.clientX, ev.clientY];
 }
@@ -229,7 +238,7 @@ canvas.onmouseup = function (ev){
         if (downClick != null){
             //means: hoverd over planet on downclick
             //moves the downClick (the planet clicked down on)
-            downClick.pos = [ev.clientX -sX, ev.clientY - sY];
+            downClick.pos = [ev.clientX, ev.clientY];
         }
         else{
             //means: clicked on void on downclick
@@ -262,11 +271,14 @@ canvas.onmouseup = function (ev){
         }
     }
 }
+function  getMousePos(sX, sY, zoom, x,y) {
+    return  ([(x - cW/2) / zoom -sX , (y  - cH/2) / zoom - sY]);
+  }
 //returns the planet the mouse is over
 //else returns void
 function getPlanet(ev){
     for(let Planet of planets){
-        if (circleCollision([ev.clientX - sX, ev.clientY - sY],10,Planet.pos, Planet.size)){
+        if (circleCollision( getMousePos(sX, sY, zoom, ev.clientX, ev.clientY),10,Planet.pos, Planet.size)){
             return Planet;
         }
     }
@@ -284,7 +296,7 @@ function spawnPlanet(ev,otherEV){
     else{
         sWnV = [(otherEV.clientX-ev.clientX)/vS, (otherEV.clientY-ev.clientY)/vS];
     }
-    planets.push(new Planet(sWnName,sWnColor,sWnR,sWnM, [ev.clientX - sX, ev.clientY - sY], sWnV));
+    planets.push(new Planet(sWnName,sWnColor,sWnR,sWnM, getMousePos(sX, sY, zoom, ev.clientX, ev.clientY), sWnV));
 }
 //clears the canvas
 function clearCanvas(){
@@ -293,7 +305,7 @@ function clearCanvas(){
 //draws a circle with radius r and a color c with the location (x,y)
 function drawCircle(x,y,r,color){
     ctx.beginPath();
-    ctx.arc(x + sX,y + sY,r,0,2*Math.PI, true);
+    ctx.arc(x ,y,r,0,2*Math.PI, true);
     ctx.fillStyle=color;
     ctx.fill();
     ctx.fillStyle="#000000";
@@ -301,8 +313,8 @@ function drawCircle(x,y,r,color){
 //draws a line between two positions
 function drawLine(pos1,pos2){
     ctx.beginPath();
-    ctx.moveTo(pos1[0] + sX,pos1[1] + sY);
-    ctx.lineTo(pos2[0] + sX,pos2[1] + sY);
+    ctx.moveTo(pos1[0],pos1[1]);
+    ctx.lineTo(pos2[0],pos2[1]);
     ctx.stroke();
 }
 //shows a text (string) on a given position
@@ -310,7 +322,7 @@ function showText(pos, string){
     ctx.fillSyle="blue";
     ctx.textAlign="center"; 
     ctx.font="30px Georgia";
-    ctx.fillText(string,pos[0] + sX,pos[1] + sY);
+    ctx.fillText(string,pos[0],pos[1]);
 }
 //checks for collision between two circles
 function circleCollision(pos1,r1,pos2,r2){
