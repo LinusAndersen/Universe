@@ -39,4 +39,4 @@ Need to Improve:
 
 this application is develloped by: 
   - Linus Andersen (programmer)
-  
+  - Julius Andersen (music)
