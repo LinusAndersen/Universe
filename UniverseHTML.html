@@ -3,39 +3,29 @@
 <head>
   <meta charset="utf-8">
   <title>Universe2D</title>
-  <style>
-  #c{
-    border:1px solid black;
-  }
-  </style>
 </head>
 <body>
-    <h3>Universe2D</h3>
-  <canvas id = "c" width="1000" height="600"></canvas>
-  <br>
-  Planets name: <input type="text" id="name" value="PlanetName">
-  <br>
-  Planets color(hex): <input type="text" id="color" value="#999999">
-  <br>
-  Planets radius: <input type="text" id="radiusI" value="15">
-  <br>
-  Planets mass: <input type="text" id="massI" value="15">
-  <br>
-  Planets direction: X <input type="text" id="SVX" value="0"> Y <input type="text" id="SVY" value="0">
-  <br>
-  <button onclick="edit()">Edit the selected planet</button>
-  <br>
-  <button onclick="pause()">Play/Pause(P)</button>
-  <br>
-  <button onclick="clearAll()">Clear all</button>
-  <br>
-  Overall gravity: <input type="text" id="Gravity" value="0.0005">
-  <br>
-  Gamespeed (in ms): <input type="text" id="gameSpeed" value="100">
-  <br>
-  <br>
-  <br>
-  <small>this game was made by: </small>
+  <canvas id = "c" width="1000" height="600"></canvas>>
+  <p style="position:absolute;left:0px;top:0px;width:150px;">Planet name: </p>
+  <input style="position:absolute;left:150px;top:15px;width:150px;"id="name" value="PlanetName">
+  <p style="position:absolute;left:0px;top:20px;width:150px;">Planet color(r,g,b): </p>
+  <input style="position:absolute;left:150px;top:35px;width:150px;"id="color" value="100,100,100">
+  <p style="position:absolute;left:0px;top:40px;width:150px;">Planet radius: </p>
+  <input style="position:absolute;left:150px;top:55px;width:150px;"id="radiusI" value="15">
+  <p style="position:absolute;left:0px;top:60px;width:150px;">Planet mass: </p>
+  <input style="position:absolute;left:150px;top:75px;width:150px;"id="massI" value="15">
+  <p style="position:absolute;left:0px;top:80px;width:150px;">Planets direction X: </p>
+  <input style="position:absolute;left:150px;top:95px;width:150px;"id="SVX" value="0">
+  <p style="position:absolute;left:0px;top:100px;width:150px;">Planets direction Y: </p>
+  <input style="position:absolute;left:150px;top:115px;width:150px;"id="SVY" value="0">
+  <p style="position:absolute;left:0px;top:120px;width:150px;">Overall gravity: </p>
+  <input style="position:absolute;left:150px;top:135px;width:150px;"id="Gravity" value="0.0005">
+  <p style="position:absolute;left:0px;top:140px;width:150px;">Gamespeed (in ms) </p>
+  <input style="position:absolute;left:150px;top:155px;width:150px;"id="gameSpeed" value="40">
+  <button style="position:absolute;left:0px;top:175px;width:300px;" onclick="edit()">Edit the selected planet</button>
+  <button style="position:absolute;left:0px;top:195px;width:300px;" onclick="pause()">Play/Pause(P)</button>
+  <button style="position:absolute;left:0px;top:215px;width:300px;" onclick="clearAll()">Clear all</button>
+  <small> this game was made by: </small>
   <br>
   <small>Julius Andersen - music</small>
   <br>

@@ -97,9 +97,9 @@ document.body.onclick=()=>{snd.play();}
 
 //earth, moon, sun
 universe = [];
-universe.push(new Planet("Mond","#7a7a7a",2,5,[50,520],[4,1]));
-universe.push(new Planet("Erde","#04870a",20,100,[-50,550],[4,0]));
-universe.push(new Planet("Sonne","#ffdd00",40,200,[0,0],[0,0]));
+universe.push(new Planet("Mond","100,100,100",2,5,[50,520],[4,1]));
+universe.push(new Planet("Erde","0,200,40",20,100,[-50,550],[4,0]));
+universe.push(new Planet("Sonne","200,200,0",40,200,[0,0],[0,0]));
 
 //setting planets at the start to the state: "universe"
 planets = universe;
@@ -107,6 +107,10 @@ planets = universe;
 //this is the gameLoop
 gameLoop();
 function gameLoop(){
+    ctx.canvas.width  = window.innerWidth;
+    ctx.canvas.height = window.innerHeight;
+    cW = canvas.width;
+    cH = canvas.height;
     gameSpeed = document.getElementById("gameSpeed").value;
     G = document.getElementById("Gravity").value;
     //follow planet
@@ -212,6 +216,7 @@ document.onkeypress = function(evt) {
     }
 
 };
+window.onwheel = function(){ return false; }
 canvas.addEventListener("onwheel" in document ? "wheel" : "mousewheel", function(e) {
     e.wheel = e.deltaY ? -e.deltaY : e.wheelDelta/40;
     zoom += e.wheel/1000;
@@ -306,7 +311,7 @@ function clearCanvas(){
 function drawCircle(x,y,r,color){
     ctx.beginPath();
     ctx.arc(x ,y,r,0,2*Math.PI, true);
-    ctx.fillStyle=color;
+    ctx.fillStyle=getHexOfRGBString(color);
     ctx.fill();
     ctx.fillStyle="#000000";
 }
@@ -387,5 +392,25 @@ function hexToRgb(hex) {
 }
 //finds the rgb-middle of 2 given colors
 function findAverageOfColors(color1, color2){
-    return(rgbToHex((hexToRgb(color1).r + hexToRgb(color2).r)/2, (hexToRgb(color1).g + hexToRgb(color2).g)/2, (hexToRgb(color1).b + hexToRgb(color2).b)/2));
+    return(parseInt((getRGBOfRGBString(color1)[0] + getRGBOfRGBString(color2)[0])/2) +","+parseInt((getRGBOfRGBString(color1)[1] + getRGBOfRGBString(color2)[1])/2)+","+parseInt((getRGBOfRGBString(color1)[2] + getRGBOfRGBString(color2)[2])/2));
+}
+console.log(getHexOfRGBString("01,50.3,120"));
+function getHexOfRGBString(RGBString){
+    return(rgbToHex(getRGBOfRGBString(RGBString)[0], getRGBOfRGBString(RGBString)[1], getRGBOfRGBString(RGBString)[2]));
+}
+function getRGBOfRGBString(RGBString){
+    let rgb = [];
+    let x = "";
+    for (var i=0; i < RGBString.length; i++) { 
+        if (RGBString.charAt(i) != ','){
+            x += RGBString.charAt(i);
+        }
+        else{
+            rgb.push(parseFloat(x));
+            x = "";
+        }
+
+    }
+    rgb.push(parseFloat(x));
+    return(rgb);
 }
