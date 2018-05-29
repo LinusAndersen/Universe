@@ -28,15 +28,12 @@ Working for now:
   - Editable Planets
 
 Bugs you should be aware of:
-  - try to have the canvas in the top left corner of your browser
-  - the text inputs have to be filled before spawning a planet
 
 Need to Improve:
-  - GUI(see Concept-Universe.png)
-  - music
-  - zoom
-  - edit Planets
-
+  - music to loud (mby fade)
+  - soundeffects (planets collide, place)
+  - mixing colors depends on mass
+  - dragging planets arround doesnt work
 this application is develloped by: 
   - Linus Andersen (programmer)
   - Julius Andersen (music)

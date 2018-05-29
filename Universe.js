@@ -42,7 +42,10 @@ class Planet{
                         Planet.dir = getHitForce(Planet.mass, Planet.dir, this.mass, this.dir);
                         Planet.mass += this.mass;
                         Planet.size = Math.sqrt((Math.pow(this.size,2) * Math.PI + Math.pow(Planet.size,2) * Math.PI)/Math.PI);
-                        Planet.color = findAverageOfColors(this.color, Planet.color);
+                        Planet.color = findAverageOfColors(this.color,this.mass, Planet.color, Planet.mass);
+                        if (didInteract){
+                            playSound("Explosion.mp3",0.5);
+                        }
                         this.del = true;
                     }
                 }
@@ -90,10 +93,19 @@ let mouseDownEV;
 let cMousePos = [0,0];
 let gameSpeed = 100;
 let zoom = 1;
-
+let didInteract = false;
 //music
-var snd = new Audio("Universe_Soundtrack.mp3"); // buffers automatically when created
-document.body.onclick=()=>{snd.play();}
+var UniSoundtrack = new Audio("Universe_Soundtrack.mp3"); // buffers automatically when created
+UniSoundtrack.volume = 0.2;
+document.body.onclick=()=>{UniSoundtrack.play();didInteract = true;}
+
+function playSound(source, volume){
+    let sound = new Audio(source);
+    sound.volume = volume;
+    sound.play();
+
+}
+
 
 //earth, moon, sun
 universe = [];
@@ -178,19 +190,19 @@ document.onkeypress = function(evt) {
     var charStr = String.fromCharCode(charCode);
     //moves your relative center left
     if (charStr == "a"){
-        sX += scrollSpeed;
+        sX += scrollSpeed/zoom;
     }
     //moves your relative center right
     if (charStr == "d"){
-        sX -= scrollSpeed;
+        sX -= scrollSpeed/zoom;
     }
     //moves your relative center up
     if (charStr == "w"){
-        sY += scrollSpeed;
+        sY += scrollSpeed/zoom;
     }
     //moves your relative center down
     if (charStr == "s"){
-        sY -= scrollSpeed;
+        sY -= scrollSpeed/zoom;
     }
     //disselects the selected planet
     if (charStr == "q"){
@@ -302,6 +314,9 @@ function spawnPlanet(ev,otherEV){
         sWnV = [(otherEV.clientX-ev.clientX)/vS, (otherEV.clientY-ev.clientY)/vS];
     }
     planets.push(new Planet(sWnName,sWnColor,sWnR,sWnM, getMousePos(sX, sY, zoom, ev.clientX, ev.clientY), sWnV));
+    if (didInteract){
+        playSound("PlaceSound.mp3",0.5);
+    }
 }
 //clears the canvas
 function clearCanvas(){
@@ -391,8 +406,8 @@ function hexToRgb(hex) {
     } : null;
 }
 //finds the rgb-middle of 2 given colors
-function findAverageOfColors(color1, color2){
-    return(parseInt((getRGBOfRGBString(color1)[0] + getRGBOfRGBString(color2)[0])/2) +","+parseInt((getRGBOfRGBString(color1)[1] + getRGBOfRGBString(color2)[1])/2)+","+parseInt((getRGBOfRGBString(color1)[2] + getRGBOfRGBString(color2)[2])/2));
+function findAverageOfColors(color1, v1, color2, v2){
+    return(parseInt((getRGBOfRGBString(color1)[0] * v1 + getRGBOfRGBString(color2)[0] * v2)/(v1 + v2)) +","+parseInt((getRGBOfRGBString(color1)[1] * v1 + getRGBOfRGBString(color2)[1] * v2)/(v1+v2))+","+parseInt((getRGBOfRGBString(color1)[2]*v1 + getRGBOfRGBString(color2)[2]*v2)/(v1+v2)));
 }
 console.log(getHexOfRGBString("01,50.3,120"));
 function getHexOfRGBString(RGBString){
