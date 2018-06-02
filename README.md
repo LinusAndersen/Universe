@@ -30,10 +30,7 @@ Working for now:
 Bugs you should be aware of:
 
 Need to Improve:
-  - music to loud (mby fade)
-  - soundeffects (planets collide, place)
-  - mixing colors depends on mass
-  - dragging planets arround doesnt work
+  - one or three save slots
 this application is develloped by: 
   - Linus Andersen (programmer)
   - Julius Andersen (music)

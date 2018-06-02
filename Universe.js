@@ -12,7 +12,7 @@ class Planet{
     show(){
         this.pos1 = [this.pos[0] + sX, this.pos[1] + sY];
         drawCircle(this.pos1[0], this.pos1[1], this.size, this.color);
-        drawLine(this.pos1, [this.pos1[0] + this.dir[0] * vS, this.pos1[1] + this.dir[1]*vS]);
+        drawLine(this.pos1, [this.pos1[0] + (this.dir[0] - parseFloat(document.getElementById("SVX").value)) * vS, this.pos1[1] + (this.dir[1] - parseFloat(document.getElementById("SVY").value)) *vS]);
         showText(this.pos1, this.name + ":" + String(this.mass));
     }
     getForceOnMe(Planets){
@@ -67,6 +67,7 @@ class Planet{
 //Test
 console.log(getHitForce(2,[1,0],1,[-2,0]));
 console.log(multipliVector([3,10], 0.5))
+console.log(objToArray({0: "Linus", 1: "Jonni"}));
 //Variables
 let canvas =  document.getElementById("c");
 let ctx =canvas.getContext("2d");
@@ -94,6 +95,7 @@ let cMousePos = [0,0];
 let gameSpeed = 100;
 let zoom = 1;
 let didInteract = false;
+let saveSlot1;
 //music
 var UniSoundtrack = new Audio("Universe_Soundtrack.mp3"); // buffers automatically when created
 UniSoundtrack.volume = 0.2;
@@ -119,6 +121,7 @@ planets = universe;
 //this is the gameLoop
 gameLoop();
 function gameLoop(){
+    //console.log(planets);
     ctx.canvas.width  = window.innerWidth;
     ctx.canvas.height = window.innerHeight;
     cW = canvas.width;
@@ -173,6 +176,34 @@ function edit(){
         selectedPlanet.dir = [parseInt(document.getElementById("SVX").value),parseInt(document.getElementById("SVY").value)];
     }
 }
+function save(){
+    console.log("save");
+    saveSlot1 = objToArray(Object.assign({}, planets));
+}
+function load(){
+    console.log("load");
+    console.log(saveSlot1);
+    while(planets.length > 0) {
+        planets.pop();
+    }
+    for (e of objToArray(Object.assign({}, saveSlot1))){
+        console.log(planets);
+        if (e.del == true){
+            e.del = false;
+        }
+        planets.push(e);
+    }
+    console.log(planets);
+}
+function objToArray(object){
+    let array = [];
+    for (var property in object) {
+        if (object.hasOwnProperty(property)) {
+            array.push( object[property]);
+        }
+    }
+    return (array);
+}
 //sets the planets-array to [] (clears the sceane)
 function clearAll(){
     console.log("hey");
@@ -223,7 +254,9 @@ document.onkeypress = function(evt) {
         if (selectedPlanet != null){
             console.log("Hey");
             //mousePos-planetePos /vs
-            selectedPlanet.dir = [(getMousePos(sX, sY, zoom, cMousePos[0], cMousePos[1])[0] - selectedPlanet.pos[0]) /vS, (getMousePos(sX, sY, zoom, cMousePos[0], cMousePos[1])[1] - selectedPlanet.pos[1]) /vS];
+            console.log((getMousePos(sX, sY, zoom, cMousePos[0], cMousePos[1])[0] - selectedPlanet.pos[0] ) /vS);
+            console.log(parseFloat(document.getElementById("SVX").value));
+            selectedPlanet.dir = [(getMousePos(sX, sY, zoom, cMousePos[0], cMousePos[1])[0] - selectedPlanet.pos[0] ) /vS + parseFloat(document.getElementById("SVX").value), (getMousePos(sX, sY, zoom, cMousePos[0], cMousePos[1])[1] - selectedPlanet.pos[1]) /vS + parseFloat(document.getElementById("SVY").value)];
         }
     }
 
@@ -255,7 +288,7 @@ canvas.onmouseup = function (ev){
         if (downClick != null){
             //means: hoverd over planet on downclick
             //moves the downClick (the planet clicked down on)
-            downClick.pos = [ev.clientX, ev.clientY];
+            downClick.pos = getMousePos(sX, sY, zoom, ev.clientX, ev.clientY);
         }
         else{
             //means: clicked on void on downclick
@@ -311,7 +344,7 @@ function spawnPlanet(ev,otherEV){
         sWnV = [parseInt(document.getElementById("SVX").value),parseInt(document.getElementById("SVY").value)];
     }
     else{
-        sWnV = [(otherEV.clientX-ev.clientX)/vS, (otherEV.clientY-ev.clientY)/vS];
+        sWnV = [((otherEV.clientX-ev.clientX)/zoom)/vS + parseFloat(document.getElementById("SVX").value), ((otherEV.clientY-ev.clientY)/zoom)/vS + parseFloat(document.getElementById("SVY").value)];
     }
     planets.push(new Planet(sWnName,sWnColor,sWnR,sWnM, getMousePos(sX, sY, zoom, ev.clientX, ev.clientY), sWnV));
     if (didInteract){
