@@ -9,11 +9,27 @@ class Planet{
         this.dir = dir;
         this.del = false;
     }
-    show(){
+    show(Planets){
         this.pos1 = [this.pos[0] + sX, this.pos[1] + sY];
         drawCircle(this.pos1[0], this.pos1[1], this.size, this.color);
-        drawLine(this.pos1, [this.pos1[0] + (this.dir[0] - parseFloat(document.getElementById("SVX").value)) * vS, this.pos1[1] + (this.dir[1] - parseFloat(document.getElementById("SVY").value)) *vS]);
+        let rX = 0;
+        let rY = 0;
+        if (relativePlanet != null){
+            rX = relativePlanet.dir[0];
+            rY = relativePlanet.dir[1];
+        }
+        drawLine(this.pos1, [this.pos1[0] + (this.dir[0] - rX) * vS, this.pos1[1] + (this.dir[1] - rY) *vS], "0,0,0");
         showText(this.pos1, this.name + ":" + String(this.mass));
+        this.showForceOnMe(Planets);
+    }
+    showForceOnMe(Planets){
+        for (let Planet of Planets){
+            if (Planet != this){
+                if (detailedForce){
+                    drawLine(this.pos1, [this.pos1[0] + (getGVector(this.pos, Planet.pos, this.mass, Planet.mass,G)[0]) * vSI, this.pos1[1] + (getGVector(this.pos, Planet.pos, this.mass, Planet.mass,G)[1]) * vSI], Planet.color);
+                }
+            }
+        }
     }
     getForceOnMe(Planets){
         let force = null;
@@ -60,7 +76,6 @@ class Planet{
         this.pos[0] += this.dir[0];
         this.pos[1] += this.dir[1];
         this.checkCol(Planets);
-        this.show();
     }
 }
 
@@ -80,9 +95,11 @@ let V1 = [0,1];
 let V2 = [1,0];
 let planets = [];
 let selectedPlanet = null;
+let relativePlanet = null;
 let downClick = null;
 let timeDownClick = null;
 let vS = 10;
+let vSI = 1000;
 let sX = 0;
 let sY = 0;
 let scrollSpeed = 100;
@@ -96,6 +113,7 @@ let gameSpeed = 100;
 let zoom = 1;
 let didInteract = false;
 let saveSlot1;
+let detailedForce = false;
 //music
 var UniSoundtrack = new Audio("Universe_Soundtrack.mp3"); // buffers automatically when created
 UniSoundtrack.volume = 0.2;
@@ -135,6 +153,11 @@ function gameLoop(){
             selectedPlanet = null;
         }
     }
+    if (relativePlanet != null){
+        if (relativePlanet.del == true){
+            relativePlanet = null;
+        }
+    }
     clearCanvas();
     ctx.translate( cW/2,cH/2);
     ctx.scale( zoom, zoom);
@@ -152,7 +175,7 @@ function gameLoop(){
     }
     //show the planets
     for (let Planet of planets){
-        Planet.show();
+        Planet.show(planets);
     }
     setTimeout(gameLoop, gameSpeed);
 }
@@ -239,6 +262,9 @@ document.onkeypress = function(evt) {
     if (charStr == "q"){
         selectedPlanet = null;
     }
+    if (charStr == "r"){
+        relativePlanet = null;
+    }
     //p pauses/stops the game, does the same as the button
     if (charStr == "p"){
         pause();
@@ -249,6 +275,15 @@ document.onkeypress = function(evt) {
             selectedPlanet.del = true;
         }
     }
+    if (charStr == "i"){
+        console.log("showForces");
+        if (detailedForce){
+            detailedForce = false;
+        }
+        else{
+            detailedForce = true;
+        }
+    }
     //v edits the dir/velocity of the selected planet
     if (charStr == "v"){
         if (selectedPlanet != null){
@@ -256,7 +291,13 @@ document.onkeypress = function(evt) {
             //mousePos-planetePos /vs
             console.log((getMousePos(sX, sY, zoom, cMousePos[0], cMousePos[1])[0] - selectedPlanet.pos[0] ) /vS);
             console.log(parseFloat(document.getElementById("SVX").value));
-            selectedPlanet.dir = [(getMousePos(sX, sY, zoom, cMousePos[0], cMousePos[1])[0] - selectedPlanet.pos[0] ) /vS + parseFloat(document.getElementById("SVX").value), (getMousePos(sX, sY, zoom, cMousePos[0], cMousePos[1])[1] - selectedPlanet.pos[1]) /vS + parseFloat(document.getElementById("SVY").value)];
+            let rX = 0;
+            let rY = 0;
+            if (relativePlanet != null){
+                rX = relativePlanet.dir[0];
+                rY = relativePlanet.dir[1];
+            }
+            selectedPlanet.dir = [(getMousePos(sX, sY, zoom, cMousePos[0], cMousePos[1])[0] - selectedPlanet.pos[0] ) /vS +rX, (getMousePos(sX, sY, zoom, cMousePos[0], cMousePos[1])[1] - selectedPlanet.pos[1]) /vS + rY];
         }
     }
 
@@ -313,6 +354,7 @@ canvas.onmouseup = function (ev){
                 document.getElementById("massI").value = selectedPlanet.mass;
                 document.getElementById("SVX").value = selectedPlanet.dir[0];
                 document.getElementById("SVY").value = selectedPlanet.dir[1];
+                relativePlanet = selectedPlanet;
             }
         }
         else{
@@ -344,7 +386,13 @@ function spawnPlanet(ev,otherEV){
         sWnV = [parseInt(document.getElementById("SVX").value),parseInt(document.getElementById("SVY").value)];
     }
     else{
-        sWnV = [((otherEV.clientX-ev.clientX)/zoom)/vS + parseFloat(document.getElementById("SVX").value), ((otherEV.clientY-ev.clientY)/zoom)/vS + parseFloat(document.getElementById("SVY").value)];
+        let rX = 0;
+        let rY = 0;
+        if (relativePlanet != null){
+            rX = relativePlanet.dir[0];
+            rY = relativePlanet.dir[1];
+        }
+        sWnV = [((otherEV.clientX-ev.clientX)/zoom)/vS +rX, ((otherEV.clientY-ev.clientY)/zoom)/vS +rY];
     }
     planets.push(new Planet(sWnName,sWnColor,sWnR,sWnM, getMousePos(sX, sY, zoom, ev.clientX, ev.clientY), sWnV));
     if (didInteract){
@@ -364,7 +412,9 @@ function drawCircle(x,y,r,color){
     ctx.fillStyle="#000000";
 }
 //draws a line between two positions
-function drawLine(pos1,pos2){
+function drawLine(pos1,pos2, color){
+    console.log(color);
+    ctx.strokeStyle = getHexOfRGBString(color);
     ctx.beginPath();
     ctx.moveTo(pos1[0],pos1[1]);
     ctx.lineTo(pos2[0],pos2[1]);
@@ -401,8 +451,9 @@ function getHitForce(m1, forceVector1, m2, forceVector2){
     return(addVector(forceVector1,getVector(getDir(forceVector2[0], forceVector2[1]),(m2/m1) * pythagoras(forceVector2[0],forceVector2[1]))));
 }
 //get gravitation comming from a planet with mass M! and radius r under considoration of the gravitational constant
+console.log(getg(1,2,2));
 function getg(G, M1, r){
-    return((G * M1)/r*r);
+    return((G * M1)/(r*r)); //    return((G * M1)/r*r);
 }
 //returns c given a and b in a² + b² = c³
 function pythagoras(a,b){
