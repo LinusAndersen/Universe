@@ -23,23 +23,23 @@ class Planet{
         this.showForceOnMe(Planets);
     }
     showForceOnMe(Planets){
-        for (let Planet of Planets){
-            if (Planet != this){
+        for (let planet of Planets){
+            if (planet != this){
                 if (detailedForce){
-                    drawLine(this.pos1, [this.pos1[0] + (getGVector(this.pos, Planet.pos, this.mass, Planet.mass,G)[0]) * vSI, this.pos1[1] + (getGVector(this.pos, Planet.pos, this.mass, Planet.mass,G)[1]) * vSI], Planet.color);
+                    drawLine(this.pos1, [this.pos1[0] + (getGVector(this.pos, planet.pos, this.mass, planet.mass,G)[0]) * vSI, this.pos1[1] + (getGVector(this.pos, planet.pos, this.mass, planet.mass,G)[1]) * vSI], planet.color);
                 }
             }
         }
     }
     getForceOnMe(Planets){
         let force = null;
-        for (let Planet of Planets){
-            if (Planet != this){
+        for (let planet of Planets){
+            if (planet != this){
                 if (force == null){
-                    force = getGVector(this.pos, Planet.pos, this.mass, Planet.mass,G);
+                    force = getGVector(this.pos, planet.pos, this.mass, planet.mass,G);
                 }
                 else{
-                    force = addVector(force, getGVector(this.pos, Planet.pos, this.mass, Planet.mass,G));
+                    force = addVector(force, getGVector(this.pos, planet.pos, this.mass, planet.mass,G));
                 }
             }
         }
@@ -51,16 +51,16 @@ class Planet{
         }
     }
     checkCol(Planets){
-        for (let Planet of Planets){
-            if (Planet != this){
-                if (circleCollision(this.pos, this.size, Planet.pos, Planet.size)){
-                    if (Planet.mass >= this.mass){
-                        Planet.dir = getHitForce(Planet.mass, Planet.dir, this.mass, this.dir);
-                        Planet.mass += this.mass;
-                        Planet.size = Math.sqrt((Math.pow(this.size,2) * Math.PI + Math.pow(Planet.size,2) * Math.PI)/Math.PI);
-                        Planet.color = findAverageOfColors(this.color,this.mass, Planet.color, Planet.mass);
+        for (let planet of Planets){
+            if (planet != this){
+                if (circleCollision(this.pos, this.size, planet.pos, planet.size)){
+                    if (planet.mass >= this.mass){
+                        planet.dir = getHitForce(planet.mass, planet.dir, this.mass, this.dir);
+                        planet.mass += this.mass;
+                        planet.size = Math.sqrt((Math.pow(this.size,2) * Math.PI + Math.pow(planet.size,2) * Math.PI)/Math.PI);
+                        planet.color = findAverageOfColors(this.color,this.mass, planet.color, planet.mass);
                         if (didInteract){
-                            playSound("Explosion.mp3",0.5);
+                            playSound("Explosion.mp3",0.3);
                         }
                         this.del = true;
                     }
@@ -116,7 +116,7 @@ let saveSlot1;
 let detailedForce = false;
 //music
 var UniSoundtrack = new Audio("Universe_Soundtrack.mp3"); // buffers automatically when created
-UniSoundtrack.volume = 0.2;
+UniSoundtrack.volume = 0.1;
 document.body.onclick=()=>{UniSoundtrack.play();didInteract = true;}
 
 function playSound(source, volume){
@@ -174,8 +174,8 @@ function gameLoop(){
         }
     }
     //show the planets
-    for (let Planet of planets){
-        Planet.show(planets);
+    for (let planet of planets){
+        planet.show(planets);
     }
     setTimeout(gameLoop, gameSpeed);
 }
@@ -200,23 +200,10 @@ function edit(){
     }
 }
 function save(){
-    console.log("save");
-    saveSlot1 = objToArray(Object.assign({}, planets));
+    document.getElementById("Save").value = planetsToString(planets);
 }
 function load(){
-    console.log("load");
-    console.log(saveSlot1);
-    while(planets.length > 0) {
-        planets.pop();
-    }
-    for (e of objToArray(Object.assign({}, saveSlot1))){
-        console.log(planets);
-        if (e.del == true){
-            e.del = false;
-        }
-        planets.push(e);
-    }
-    console.log(planets);
+    planets = stringToPlanets(document.getElementById("Save").value, 8);
 }
 function objToArray(object){
     let array = [];
@@ -369,9 +356,9 @@ function  getMousePos(sX, sY, zoom, x,y) {
 //returns the planet the mouse is over
 //else returns void
 function getPlanet(ev){
-    for(let Planet of planets){
-        if (circleCollision( getMousePos(sX, sY, zoom, ev.clientX, ev.clientY),10,Planet.pos, Planet.size)){
-            return Planet;
+    for(let planet of planets){
+        if (circleCollision( getMousePos(sX, sY, zoom, ev.clientX, ev.clientY),10,planet.pos, planet.size)){
+            return planet;
         }
     }
     return null;
@@ -396,7 +383,7 @@ function spawnPlanet(ev,otherEV){
     }
     planets.push(new Planet(sWnName,sWnColor,sWnR,sWnM, getMousePos(sX, sY, zoom, ev.clientX, ev.clientY), sWnV));
     if (didInteract){
-        playSound("PlaceSound.mp3",0.5);
+        playSound("PlaceSound.mp3",0.3);
     }
 }
 //clears the canvas
@@ -513,3 +500,53 @@ function getRGBOfRGBString(RGBString){
     rgb.push(parseFloat(x));
     return(rgb);
 }
+function planetsToString(planets){
+    let str = "";
+    for (planet of planets){
+        for (let property in planet) {
+            if (planet.hasOwnProperty(property)) {
+                // do stuff
+                str = str.concat(planet[property] + ":");
+            }
+        }
+    }
+    return(str);
+}
+function stringToPlanets(str, attPerPlanet){
+    let i = 0;
+    let planetData = [];
+    let attString = "";
+    let newPlanets = [];
+    while (i < str.length){
+         if (str.charAt(i) == ":"){
+            planetData.push(attString);
+            attString = "";
+            if (planetData.length == attPerPlanet){
+                console.log(planetData);
+                newPlanets.push(new Planet(planetData[0], planetData[1], parseInt(planetData[2]), parseInt(planetData[3]), [stringToArray(planetData[7])[0] - sX, stringToArray(planetData[7])[1] - sY], stringToArray(planetData[5])));
+                planetData = [];
+            }
+        }
+        else{
+            attString = attString.concat(str.charAt(i));
+        }
+        i += 1;
+    }
+    return(newPlanets);
+}
+function stringToArray(str){
+    let array = [];
+    let e = "";
+    for(char of str){
+        if (char == ","){
+            array.push(parseFloat(e));
+            e = "";
+        }
+        else{
+            e = e.concat(char);
+        }
+    }
+    array.push(parseFloat(e));
+    return array;
+}
+//name, color, size, mass, pos, dir
