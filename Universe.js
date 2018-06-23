@@ -1,3 +1,5 @@
+//current BUG: sometimes NaN when loading
+
 //this is the "planet" class
 class Planet{
     constructor(name, color, size, mass, pos, dir, movable, collide){
@@ -16,6 +18,7 @@ class Planet{
             this.myTrail.push(this.pos.slice());
             this.myTrail.push(this.pos.slice());
         }
+        this.lastPos = this.pos;
         console.log(movable);
     }
     show(Planets){
@@ -57,10 +60,10 @@ class Planet{
         for (let planet of Planets){
             if (planet != this){
                 if (force == null){
-                    force = getGVector(this.pos, planet.pos, this.mass, planet.mass,G);
+                    force = getGVector(this.pos, planet.lastPos, this.mass, planet.mass,G);
                 }
                 else{
-                    force = addVector(force, getGVector(this.pos, planet.pos, this.mass, planet.mass,G));
+                    force = addVector(force, getGVector(this.pos, planet.lastPos, this.mass, planet.mass,G));
                 }
             }
         }
@@ -72,24 +75,30 @@ class Planet{
         }
     }
     checkCol(Planets){
+    	  //collision should be at end of frame
         for (let planet of Planets){
             if (planet != this){
                 if (circleCollision(this.pos, this.size, planet.pos, planet.size)){
                     if (planet.mass >= this.mass && planet.collide){
-                        planet.dir = getHitForce(planet.mass, planet.dir, this.mass, this.dir);
-                        planet.mass += this.mass;
-                        planet.size = Math.sqrt((Math.pow(this.size,2) * Math.PI + Math.pow(planet.size,2) * Math.PI)/Math.PI);
-                        planet.color = findAverageOfColors(this.color,this.mass, planet.color, planet.mass);
-                        if (didInteract){
-                            playSound("Explosion.mp3",0.3);
+                        //planet.dir = getHitForce(planet.mass, planet.dir, this.mass, this.dir);
+                        //planet.mass += this.mass;
+                        //planet.size = Math.sqrt((Math.pow(this.size,2) * Math.PI + Math.pow(planet.size,2) * Math.PI)/Math.PI);
+                        //planet.color = findAverageOfColors(this.color,this.mass, planet.color, planet.mass);
+                        if (this.del == false){
+                            if (didInteract){
+                                playSound("Explosion.mp3",0.3);
+                            }
+                            this.del = true;
+                            planet.del = true;
+                            collisionsToHandle.push([this,planet]);
                         }
-                        this.del = true;
                     }
                 }
             }
         }
     }
     move(Planets){
+    	  this.last = this.pos;
         if (this.getForceOnMe(Planets) != false){
             this.dir = addVector(this.dir,this.getForceOnMe(Planets));
         }
@@ -146,6 +155,7 @@ let saveSlot1;
 let detailedForce = false;
 let showTrails = false;
 let trailAccuracyInP = 10;
+let collisionsToHandle = [];
 //music
 var UniSoundtrack = new Audio("Universe_Soundtrack.mp3"); // buffers automatically when created
 UniSoundtrack.volume = 0.1;
@@ -205,6 +215,12 @@ function gameLoop(){
             planets.splice(p,1);
         }
     }
+    //collide
+    for (let p of collisionsToHandle){
+        planets.push(planetCollision(p[0], p[1]));
+        console.log(planetCollision(p[0], p[1]));
+    }
+    collisionsToHandle = [];
     //show the planets
     for (let planet of planets){
         planet.show(planets);
@@ -254,7 +270,7 @@ function save(){
     document.getElementById("Save").value = planetsToString(planets);
 }
 function load(){
-    planets = stringToPlanets(document.getElementById("Save").value, 11);
+    planets = stringToPlanets(document.getElementById("Save").value, 12);
 }
 function objToArray(object){
     let array = [];
@@ -264,6 +280,25 @@ function objToArray(object){
         }
     }
     return (array);
+}
+function planetCollision(planet1, planet2){
+    let newName;
+    let mo;
+    let co;
+    if (planet1.mass >= planet2.mass){
+		newName = planet1.name;	
+		mo = planet1.movable;
+		co = planet1.collide;	
+	}
+	else{
+		newName = planet2.name;
+		mo = planet2,movable;
+		co = planet2.collide;	
+	}
+	return(new Planet(newName, findAverageOfColors(planet1.color,planet1.mass, planet2.color, planet2.mass), Math.sqrt((Math.pow(planet1.size,2) * Math.PI + Math.pow(planet2.size,2) * Math.PI)/Math.PI),planet1.mass + planet2.mass,[middlePositions(planet1.pos[0], planet1.mass, planet2.pos[0], planet2.mass),middlePositions(planet1.pos[1], planet1.mass, planet2.pos[1], planet2.mass)], getHitForce(planet1.mass, planet1.dir, planet2.mass, planet2.dir), mo, co));
+}
+function middlePositions(pos1,mass1,pos2,mass2){
+	return((pos1 *mass1 + pos2*mass2)/(mass1 + mass2));
 }
 //sets the planets-array to [] (clears the sceane)
 function clearAll(){
