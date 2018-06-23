@@ -1,36 +1,30 @@
 # Universe
 About the project:
-This is a thing I create at the moment centered around gravity and planets.
+This is a 2D Simulation of Gravity with other features
 
 Controlls:
-  - WASD to move in the scean
+  - WASD to move the camera
+  - Q: unlock the camera
+  - R: "objective" viewing for the speeds of the planets
+  - Pressing X: Delets the selected planet (if you have selected one)
+  - Pressing V: Sets the Velocity of the selected planet (if you have selected one)
+  - Pressing I: Lets you see the forces pulling
+  - Pressing P: Play/Pause
   - Clicking in a free-space spawns a new planet
   - Clicking on a planet: have your camera locked to this planet
-  - Q: unlock the kamera
-  - Dragging a planet: move the planet
-  - Pressing X: Delets the selected planet (if you have selected one)
-  - Clicking on the same planet you selected copys his data to your textinputs
-  - Clicking "Edit" edits the selected planet
-  - Clicking "Clear" clears all planets
-  - the textinputs from up to down, left to right: Name, Color(hex),      Radius, Mass, Velocity(x), Velocity(y), overall Gravity
+  - Another click copys the planet data into your slot
+  - Dragging a planet: moves the planet
 
-
-
-Working for now:
-  - gravity 
-  - movement
-  - planets
-  - collisions
-  - camera follow
-  - you can delete Planets 
-  - name and mass is displayed
-  - colorcollision
-  - Editable Planets
-
-Bugs you should be aware of:
-
-Need to Improve:
-  - one or three save slots
-this application is develloped by: 
+Features:
+  - Gravity 
+  - Collisions
+  - Camera follow
+  - Planet editing
+  - GUI
+  - Save and load
+  - Trails
+  - Force-Information (I)
+  
+this application is made by: 
   - Linus Andersen (programmer)
   - Julius Andersen (music)
