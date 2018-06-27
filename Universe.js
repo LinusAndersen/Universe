@@ -33,7 +33,6 @@ class Planet{
         drawLine(this.pos1, [this.pos1[0] + (this.dir[0] - rX) * vS, this.pos1[1] + (this.dir[1] - rY) *vS], "0,0,0");
         showText(this.pos1, this.name + ":" + String(this.mass));
         this.showForceOnMe(Planets);
-        console.log(this.name+ ": " + this.myTrail);
         this.showMyTrail();    
     }
     showForceOnMe(Planets){
@@ -47,12 +46,11 @@ class Planet{
     }
     showMyTrail(){
         if (this.myTrail.length > 0){
-            for (let i = 0; i < this.myTrail.length; i++){
-                console.log(this.name);
-                console.log([this.myTrail[i][0] + sX, this.myTrail[i][1] + sY]);
+            for (let i = 1; i < this.myTrail.length; i++){
                 //console.log([this.myTrail[i + 1][0] + sX, this.myTrail[i + 1][1] + sY]);
-                drawCircle(this.myTrail[i][0] + sX, this.myTrail[i][1] + sY,5, this.color);
+                drawLine([this.myTrail[i-1][0] + sX, this.myTrail[i-1][1] + sY],[this.myTrail[i][0] + sX, this.myTrail[i][1] + sY], this.color);
             }
+            drawLine([this.myTrail[this.myTrail.length -1][0] + sX,this.myTrail[this.myTrail.length -1][1] + sY], [this.pos[0] + sX,this.pos[1] + sY], this.color);
         }
     }
     getForceOnMe(Planets){
@@ -111,8 +109,6 @@ class Planet{
             this.checkCol(Planets);
         }
         if (showTrails && pythagoras(this.pos[0] - this.myTrail[this.myTrail.length - 1][0], this.pos[1] - this.myTrail[this.myTrail.length - 1][1]) >= trailAccuracyInP){
-            console.log("Please add the pos");
-            console.log(this.pos);
             this.myTrail.push(this.pos.slice());
         }
     }
@@ -490,7 +486,6 @@ function drawCircle(x,y,r,color){
 }
 //draws a line between two positions
 function drawLine(pos1,pos2, color){
-    console.log(color);
     ctx.strokeStyle = getHexOfRGBString(color);
     ctx.beginPath();
     ctx.moveTo(pos1[0],pos1[1]);
