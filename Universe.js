@@ -33,7 +33,8 @@ class Planet{
         drawLine(this.pos1, [this.pos1[0] + (this.dir[0] - rX) * vS, this.pos1[1] + (this.dir[1] - rY) *vS], "0,0,0");
         showText(this.pos1, this.name + ":" + String(this.mass));
         this.showForceOnMe(Planets);
-        this.showMyTrail();    
+        this.showMyTrail();   
+        console.log(this); 
     }
     showForceOnMe(Planets){
         for (let planet of Planets){
@@ -96,7 +97,7 @@ class Planet{
         }
     }
     move(Planets){
-    	  this.last = this.pos;
+    	//this.last = this.pos;
         if (this.getForceOnMe(Planets) != false){
             this.dir = addVector(this.dir,this.getForceOnMe(Planets));
         }
