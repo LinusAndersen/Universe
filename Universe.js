@@ -34,7 +34,7 @@ class Planet{
         showText(this.pos1, this.name + ":" + String(this.mass));
         this.showForceOnMe(Planets);
         this.showMyTrail(); 
-        console.log(this);
+        //console.log(this);
     }
     showForceOnMe(Planets){
         for (let planet of Planets){
