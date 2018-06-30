@@ -34,6 +34,7 @@ class Planet{
         showText(this.pos1, this.name + ":" + String(this.mass));
         this.showForceOnMe(Planets);
         this.showMyTrail(); 
+        console.log(this);
     }
     showForceOnMe(Planets){
         for (let planet of Planets){
@@ -287,7 +288,7 @@ function planetCollision(planet1, planet2){
 	}
 	else{
 		newName = planet2.name;
-		mo = planet2,movable;
+		mo = planet2.movable;
 		co = planet2.collide;	
 	}
 	return(new Planet(newName, findAverageOfColors(planet1.color,planet1.mass, planet2.color, planet2.mass), Math.sqrt((Math.pow(planet1.size,2) * Math.PI + Math.pow(planet2.size,2) * Math.PI)/Math.PI),planet1.mass + planet2.mass,[middlePositions(planet1.pos[0], planet1.mass, planet2.pos[0], planet2.mass),middlePositions(planet1.pos[1], planet1.mass, planet2.pos[1], planet2.mass)], [middlePositions(planet1.dir[0], planet1.mass, planet2.dir[0], planet2.mass),middlePositions(planet1.dir[1], planet1.mass, planet2.dir[1], planet2.mass)], mo, co));
