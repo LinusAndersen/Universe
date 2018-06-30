@@ -83,7 +83,7 @@ class Planet{
                         //planet.mass += this.mass;
                         //planet.size = Math.sqrt((Math.pow(this.size,2) * Math.PI + Math.pow(planet.size,2) * Math.PI)/Math.PI);
                         //planet.color = findAverageOfColors(this.color,this.mass, planet.color, planet.mass);
-                        if (this.del == false){
+                        if (this.del == false && planet.del == false){
                             if (didInteract){
                                 playSound("Explosion.mp3",0.3);
                             }
